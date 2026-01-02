@@ -62,6 +62,11 @@ cargo install rusk-task
 - Make treats targets as file-generating tasks by default. rusk-task switches between file targets and phony targets based on naming conventions.
 - Make has many other features and specifications, which can add complexity.
 
+## Acknowledgements
+
+- [`Walkmana-25/rust-actions-example`](https://github.com/Walkmana-25/rust-actions-example)
+  - Referenced for setting up GitHub Actions for Rust projects.
+
 ## License
 
 [Apache-2.0](./LICENSE)
