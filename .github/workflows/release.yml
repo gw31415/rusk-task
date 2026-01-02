@@ -72,7 +72,7 @@ jobs:
       - name: Install Dependencies on Windows
         if: ${{ matrix.runner == 'windows-latest' }}
         run: |
-          choco install make tar --yes
+          choco install make --yes
       - name: Install Dependencies on MacOS
         if: ${{ matrix.runner == 'macos-latest' }}
         run: |
