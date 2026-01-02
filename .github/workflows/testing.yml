@@ -25,6 +25,8 @@ jobs:
         uses: Swatinem/rust-cache@v2
       - name: Test Build
         run: cargo build --verbose
+      - name: Check if Cargo.lock is up to date
+        run: git diff --exit-code Cargo.lock
       - name: Run tests
         run: cargo test --verbose
 
