@@ -23,7 +23,7 @@ Make is widely used as a task runner, but despite its relatively simple mechanis
 mise use github:gw31415/rusk-task
 ```
 
-### Cargo
+### Cargo (from source)
 
 ```bash
 cargo install rusk-task
