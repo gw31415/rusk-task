@@ -3,6 +3,8 @@ name = "rusk-task"
 version = "0.1.1"
 edition = "2024"
 resolver = "3"
+license = "Apache-2.0"
+description = "An asynchronous task runner in Rust, aiming to be a “simpler Make.”"
 
 [[bin]]
 name = "rusk"
