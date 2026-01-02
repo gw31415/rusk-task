@@ -1,9 +1,14 @@
-use std::{borrow::Cow, ffi::OsStr, fmt::Display, path::Path};
+use std::{
+    borrow::Cow,
+    ffi::{OsStr, OsString},
+    fmt::Display,
+    path::Path,
+};
 
 use anyhow::Error;
 use colored::Colorize;
 use futures::future::join_all;
-use hashbrown::{hash_map::EntryRef, HashMap};
+use hashbrown::{HashMap, hash_map::EntryRef};
 use ignore::{WalkBuilder, WalkState};
 use itertools::Itertools;
 use toml::Table;
@@ -258,30 +263,29 @@ impl RuskfileComposer {
                         .build_parallel()
                         .run(|| {
                             Box::new(|res| {
-                                if let Ok(entry) = res {
-                                    if let Some(ft) = entry.file_type() {
-                                        if ft.is_file() && is_ruskfile(entry.file_name()) {
-                                            let path = NormarizedPath::from(entry.path());
-                                            tx.blocking_send(async move {
-                                                // make Future of Config
-                                                let res = tokio::fs::read_to_string(&path)
-                                                    .await
-                                                    .map_err(Error::from)
-                                                    .and_then(|content| {
-                                                        toml::from_str::<RuskfileDeserializer>(
-                                                            &content,
-                                                        )
+                                if let Ok(entry) = res
+                                    && let Some(ft) = entry.file_type()
+                                {
+                                    if ft.is_file() && is_ruskfile(entry.file_name()) {
+                                        let path = NormarizedPath::from(entry.path());
+                                        tx.blocking_send(async move {
+                                            // make Future of Config
+                                            let res = tokio::fs::read_to_string(&path)
+                                                .await
+                                                .map_err(Error::from)
+                                                .and_then(|content| {
+                                                    toml::from_str::<RuskfileDeserializer>(&content)
                                                         .map_err(Error::from)
-                                                    })
-                                                    .map_err(|err| err.to_string());
-                                                (path, res)
-                                            })
-                                            .unwrap();
-                                        }
-                                        return WalkState::Continue;
+                                                })
+                                                .map_err(|err| err.to_string());
+                                            (path, res)
+                                        })
+                                        .unwrap();
                                     }
+                                    WalkState::Continue
+                                } else {
+                                    WalkState::Skip
                                 }
-                                WalkState::Skip
                             })
                         });
                 }
@@ -367,7 +371,7 @@ struct TaskDeserializer {
 struct TaskDeserializerInner {
     /// Environment variables that are specific to this task
     #[serde(default)]
-    envs: HashMap<String, String>,
+    envs: HashMap<OsString, OsString>,
     /// Script to be executed
     #[serde(default)]
     script: Option<String>,

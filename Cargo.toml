@@ -1,7 +1,7 @@
 [package]
 name = "rusk-task"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 resolver = "3"
 
 [[bin]]
@@ -9,27 +9,18 @@ name = "rusk"
 path = "src/main.rs"
 
 [dependencies]
-deno_task_shell = "0.20.3"
-tokio = { version = "1.42.0", features = ["full"] }
-anyhow = "1.0.95"
-thiserror = "2.0.11"
+deno_task_shell = "0.26.1"
+tokio = { version = "1.48.0", features = ["full"] }
+anyhow = "1.0.100"
+thiserror = "2.0.17"
 futures = "0.3.31"
-serde = { version = "1.0.217", features = ["derive"] }
+serde = { version = "1.0.218", features = ["derive"] }
 ignore = "0.4.23"
-toml = "0.8.19"
+toml = "0.9.10"
 colored = "3.0.0"
-hashbrown = { version = "0.15.2", features = ["serde"] }
+hashbrown = { version = "0.16.1", features = ["serde"] }
 itertools = "0.14.0"
 path-dedot = "3.1.1"
 pathdiff = "0.2.3"
-once_cell = "1.20.2"
-unicode-width = "0.2.0"
-
-[profile.release]
-# opt-level = "z"
-debug = false
-strip = true
-lto = true
-panic = "abort"
-codegen-units = 1
-# incremental = false
+once_cell = "1.20.3"
+unicode-width = "0.2.2"

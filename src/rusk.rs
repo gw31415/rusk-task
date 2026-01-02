@@ -1,10 +1,11 @@
 use std::{
     cell::{Ref, RefCell},
+    ffi::OsString,
     fmt::Debug,
     ops::Deref,
 };
 
-use deno_task_shell::{parser::SequentialList, ShellPipeReader, ShellPipeWriter, ShellState};
+use deno_task_shell::{ShellPipeReader, ShellPipeWriter, ShellState, parser::SequentialList};
 use futures::future::try_join_all;
 use hashbrown::HashMap;
 use tokio::sync::watch::Receiver;
@@ -12,7 +13,7 @@ use tokio::sync::watch::Receiver;
 use crate::{
     digraph::{DigraphItem, TreeNode, TreeNodeCreationError},
     fs::{RuskfileComposer, RuskfileDeserializeError},
-    path::{get_current_dir, NormarizedPath},
+    path::{NormarizedPath, get_current_dir},
     taskkey::{TaskKey, TaskKeyParseError, TaskKeyRelative},
 };
 
@@ -96,7 +97,7 @@ impl Rusk {
 /// Task configuration
 pub struct Task {
     /// Environment variables that are specific to this task
-    pub envs: HashMap<String, String>,
+    pub envs: HashMap<OsString, OsString>,
     /// Script to be executed
     pub script: Option<String>,
     /// Working directory
@@ -108,7 +109,7 @@ pub struct Task {
 /// Task execution global options
 pub struct ExecuteOpts {
     /// Environment variables
-    pub envs: HashMap<String, String>,
+    pub envs: HashMap<OsString, OsString>,
     /// IO
     pub io: IOSet,
 }
@@ -116,7 +117,7 @@ pub struct ExecuteOpts {
 impl Default for ExecuteOpts {
     fn default() -> Self {
         Self {
-            envs: std::env::vars().collect(),
+            envs: std::env::vars_os().collect(),
             io: Default::default(),
         }
     }
@@ -301,13 +302,13 @@ impl TaskExecutableInner {
                 TaskKey::Phony(_) => {
                     // Check only the existence of the dependency file
                     for dep in depends {
-                        if let TaskKey::File(file) = dep {
-                            if !matches!(tokio::fs::try_exists(&file).await, Ok(true)) {
-                                return Err(TaskError::DependencyFileNotFound {
-                                    dep_file: file,
-                                    task: key,
-                                });
-                            }
+                        if let TaskKey::File(file) = dep
+                            && !matches!(tokio::fs::try_exists(&file).await, Ok(true))
+                        {
+                            return Err(TaskError::DependencyFileNotFound {
+                                dep_file: file,
+                                task: key,
+                            });
                         }
                     }
                 }
@@ -315,7 +316,12 @@ impl TaskExecutableInner {
         }
         let exit_code = deno_task_shell::execute_with_pipes(
             script,
-            ShellState::new(envs, &cwd, Default::default(), Default::default()),
+            ShellState::new(
+                envs,
+                cwd.to_path_buf(),
+                Default::default(),
+                Default::default(),
+            ),
             io.stdin,
             io.stdout,
             io.stderr,
@@ -346,7 +352,7 @@ struct TaskExecutableInner {
     /// TaskKey
     key: TaskKey,
     /// Environment variables
-    envs: std::collections::HashMap<String, String>,
+    envs: std::collections::HashMap<OsString, OsString>,
     /// Script to be executed
     script: SequentialList,
     /// Working directory

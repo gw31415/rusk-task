@@ -6,7 +6,7 @@ use std::{
     rc::Rc,
 };
 
-use hashbrown::{hash_map::EntryRef, HashMap, HashSet};
+use hashbrown::{HashMap, HashSet, hash_map::EntryRef};
 
 /// Node of a tree
 pub struct TreeNode<K: Hash + Eq + Clone, T> {
