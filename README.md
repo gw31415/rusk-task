@@ -10,7 +10,7 @@ An asynchronous task runner in Rust, aiming to be a “simpler Make.”
 
 ## Concept
 
->[!INFO]
+> [!NOTE]
 > To read more detailed, Japanese version of the concept, check [zenn.dev](https://zenn.dev/gw31415/articles/52ba37bde76980).
 
 Make is widely used as a task runner, but despite its relatively simple mechanism, it comes with many default settings that can lead to excessive boilerplate or copy-paste usage. rusk-task replaces these default values with more general-purpose ones, offering a “more modern” way to configure tasks in pursuit of a "simpler Make."
