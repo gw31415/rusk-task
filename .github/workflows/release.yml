@@ -20,7 +20,7 @@ jobs:
     uses: ./.github/workflows/publish.yml
 
   build:
-    needs: [Test]
+    needs: [Test, Publish]
     runs-on: ${{ matrix.runner }}
     env:
       BINARY_NAME: rusk
