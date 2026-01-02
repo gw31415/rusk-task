@@ -1,20 +1,94 @@
-name: Deploy to Crates.io
+name: Create release
 
 permissions:
-  id-token: write
+  contents: write
 
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - v*
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  Test:
+    uses: ./.github/workflows/testing.yml
+
+  build:
+    needs: [Test]
+    runs-on: ${{ matrix.runner }}
+    env:
+      BINARY_NAME: rusk
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            extension: ""
+            runner: ubuntu-latest
+            cross: true
+          - target: x86_64-pc-windows-msvc
+            extension: ".exe"
+            runner: windows-latest
+            cross: false
+          - target: x86_64-apple-darwin
+            extension: ""
+            runner: macos-latest
+            cross: false
+          - target: aarch64-unknown-linux-gnu
+            extension: ""
+            runner: ubuntu-latest
+            cross: true
+          - target: aarch64-pc-windows-msvc
+            extension: ".exe"
+            runner: windows-latest
+            cross: false
+          - target: aarch64-apple-darwin
+            extension: ""
+            runner: macos-latest
+            cross: false
+          - target: armv7-unknown-linux-gnueabihf
+            extension: ""
+            runner: ubuntu-latest
+            cross: true
+
     steps:
-      - uses: actions/checkout@v6
-      - uses: rust-lang/crates-io-auth-action@v1
-        id: auth
-      - run: cargo publish
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Dependencies on Windows
+        if: ${{ matrix.runner == 'windows-latest' }}
+        run: |
+          choco install make --yes
+      - name: Install Dependencies on MacOS
+        if: ${{ matrix.runner == 'macos-latest' }}
+        run: |
+          brew install make
+
+      - name: Install cross (if needed)
+        if: ${{ matrix.cross }}
+        run: cargo install cross --git https://github.com/cross-rs/cross
+
+      - name: Build Project on cross
+        if: ${{ matrix.cross }}
+        run: |
+          cross build --release --target ${{ matrix.target }} --verbose
+      - name: Build Project
+        if: ${{ !matrix.cross }}
+        run: |
+          rustup target add ${{ matrix.target }}
+          cargo build --release --target ${{ matrix.target }} --verbose
+
+      - name: Rename Artifacts
+        shell: bash
+        run: |
+          mv target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}{,-${{ github.ref_name }}-${{ matrix.target }}${{ matrix.extension }}}
+
+      - name: Release Artifacts
+        uses: softprops/action-gh-release@v2
         env:
-          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}-${{ github.ref_name }}-${{ matrix.target }}${{ matrix.extension }}
