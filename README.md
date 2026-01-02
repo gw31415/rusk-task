@@ -1,5 +1,10 @@
 # rusk-task
 
+[![Crates.io](https://img.shields.io/crates/v/rusk-task?style=flat-square)](https://crates.io/crates/rusk-task)
+[![Crates.io](https://img.shields.io/crates/d/rusk-task?style=flat-square)](https://crates.io/crates/rusk-task)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](LICENSE)
+![Testing](https://github.com/gw31415/rusk-task/actions/workflows/testing.yml/badge.svg)
+
 An asynchronous task runner in Rust, aiming to be a “simpler Make.”
 ![demo](https://github.com/user-attachments/assets/ee622cc9-8ebd-4ade-8cee-062e9eb8e2b3)
 
@@ -10,7 +15,7 @@ Make is widely used as a task runner, but despite its relatively simple mechanis
 ## Installation
 
 ```bash
-cargo install --git https://github.com/gw31415/rusk-task
+cargo install rusk-task
 ```
 
 ## Features
@@ -48,4 +53,4 @@ cargo install --git https://github.com/gw31415/rusk-task
 
 ## License
 
-Apache-2.0
+[Apache-2.0](./LICENSE)
