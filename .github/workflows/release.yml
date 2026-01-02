@@ -15,6 +15,10 @@ jobs:
   Test:
     uses: ./.github/workflows/testing.yml
 
+  Publish:
+    needs: [Test]
+    uses: ./.github/workflows/publish.yml
+
   build:
     needs: [Test]
     runs-on: ${{ matrix.runner }}
