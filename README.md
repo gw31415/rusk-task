@@ -5,8 +5,12 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](LICENSE)
 ![Testing](https://github.com/gw31415/rusk-task/actions/workflows/testing.yml/badge.svg)
 
+<img width="512" height="224" alt="rusk-task banner image" src="https://github.com/user-attachments/assets/9be8cafe-3b7b-4389-9512-43b1fb569fe2" />
+
 An asynchronous task runner in Rust, aiming to be a “simpler Make.”
 ![demo](https://github.com/user-attachments/assets/ee622cc9-8ebd-4ade-8cee-062e9eb8e2b3)
+
+[![Featured on Orynth](https://orynth.dev/api/badge/rusk-task?style=default)](https://orynth.dev/projects/rusk-task)
 
 ## Concept
 
